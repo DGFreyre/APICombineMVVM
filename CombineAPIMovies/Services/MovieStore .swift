@@ -37,6 +37,9 @@ public class MovieStore: MovieService {
                     return data
                 }
                 .decode(type: MoviesResponse.self, decoder: self.jsonDecoder)
+                .compactMap{ responseApi in
+                    return responseApi.results
+                }
                 .receive(on: RunLoop.main)
                 .sink(receiveCompletion: { (completion) in
                     if case let .failure(error) = completion {
@@ -52,7 +55,7 @@ public class MovieStore: MovieService {
                         }
                     }
                 
-                }, receiveValue: {response(.success($0.results)) })
+                }, receiveValue: {response(.success($0)) })
                 .store(in: &self.subscriptions)
         }
     }
